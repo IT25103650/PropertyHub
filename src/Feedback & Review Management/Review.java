@@ -14,4 +14,10 @@ public abstract class Review {
         this.comment = comment;
     }
 
+    public String getReviewId() { return reviewId; }
+    public String getPropertyId() { return propertyId; }
+    public String getReviewerId() { return reviewerId; }
+    public int getRating() { return rating; }
+    public String getComment() { return comment; }
+
 }
