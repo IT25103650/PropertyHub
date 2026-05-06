@@ -20,4 +20,10 @@ public abstract class Review {
     public int getRating() { return rating; }
     public String getComment() { return comment; }
 
+    public void setReviewId(String reviewId) { this.reviewId = reviewId; }
+    public void setPropertyId(String propertyId) { this.propertyId = propertyId; }
+    public void setReviewerId(String reviewerId) { this.reviewerId = reviewerId; }
+    public void setRating(int rating) { this.rating = rating; }
+    public void setComment(String comment) { this.comment = comment; }
+
 }
