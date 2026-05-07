@@ -10,4 +10,8 @@ public class VerifiedReview extends Review {
     public String getPurchaseDate() { return purchaseDate; }
     public void setPurchaseDate(String purchaseDate) { this.purchaseDate = purchaseDate; }
 
+    @Override
+    public String displayReview() {
+        return "Verified Buyer Review (Purchased: " + purchaseDate + ") [" + getRating() + "/5]: " + getComment() + " ✓";
+    }
 }
