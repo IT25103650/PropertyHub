@@ -4,4 +4,9 @@ public class PublicReview extends Review {
         super(reviewId, propertyId, reviewerId, rating, comment);
     }
 
+    @Override
+    public String displayReview() {
+        return "Public Review [" + getRating() + "/5]: " + getComment();
+    }
+
 }
