@@ -7,4 +7,7 @@ public class VerifiedReview extends Review {
         this.purchaseDate = purchaseDate;
     }
 
+    public String getPurchaseDate() { return purchaseDate; }
+    public void setPurchaseDate(String purchaseDate) { this.purchaseDate = purchaseDate; }
+
 }
