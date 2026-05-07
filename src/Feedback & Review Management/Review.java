@@ -26,4 +26,6 @@ public abstract class Review {
     public void setRating(int rating) { this.rating = rating; }
     public void setComment(String comment) { this.comment = comment; }
 
+    public abstract String displayReview();
+
 }
