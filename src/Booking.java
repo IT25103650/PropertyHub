@@ -39,3 +39,22 @@ public abstract class Booking {
     public void setPropertyId(String propertyId) {
          this.propertyId = propertyId; 
     }
+	 public String getBookingDate() { 
+        return bookingDate; 
+    }
+
+    public void setBookingDate(String bookingDate) {
+         this.bookingDate = bookingDate; 
+    }
+
+    public String getStatus() {
+         return status; 
+    }
+
+    public void setStatus(String status) {
+         this.status = status; 
+    }
+
+    public abstract String confirmBooking();
+}
+
