@@ -14,3 +14,9 @@ public class PhysicalViewing extends Booking {
     public void setAssignedAgentId(String assignedAgentId) {
          this.assignedAgentId = assignedAgentId; 
     }
+	@Override
+    public String confirmBooking() {
+        setStatus("confirmed");
+        return "Physical viewing confirmed with Agent: " + assignedAgentId;
+    }
+}
