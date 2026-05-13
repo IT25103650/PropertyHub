@@ -61,3 +61,29 @@ public class BookingController {
             }
         }
         return "Booking & Viewing Management/booking-form";
+		  // ─── GET: Booking history page ────────────────────────────────────────────
+    @GetMapping("/booking-history")
+    public String bookingHistory(Model model, HttpSession session) {
+        Object userIdObj = session.getAttribute("userId");
+        if (userIdObj == null) {
+            return "redirect:/login?redirect=/booking-history";
+        }
+        int buyerId = Integer.parseInt(userIdObj.toString());
+
+        List<Map<String, Object>> bookings = jdbcTemplate.queryForList(
+            "SELECT b.*, p.title AS property_title, p.location FROM Bookings b " +
+            "JOIN Properties p ON b.property_id = p.property_id " +
+            "WHERE b.buyer_id = ? ORDER BY b.booking_date DESC", buyerId);
+
+        long total     = bookings.size();
+        long pending   = bookings.stream().filter(b -> "pending".equals(b.get("status"))).count();
+        long confirmed = bookings.stream().filter(b -> "confirmed".equals(b.get("status"))).count();
+        long cancelled = bookings.stream().filter(b -> "cancelled".equals(b.get("status"))).count();
+
+        model.addAttribute("bookings",          bookings);
+        model.addAttribute("totalBookings",     total);
+        model.addAttribute("pendingBookings",   pending);
+        model.addAttribute("confirmedBookings", confirmed);
+        model.addAttribute("cancelledBookings", cancelled);
+        return "Booking & Viewing Management/booking-history";
+    }
