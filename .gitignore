@@ -1,0 +1,7 @@
+.idea/
+target/
+*.iml
+.vscode/
+uploads/
+Data/
+UI/q
