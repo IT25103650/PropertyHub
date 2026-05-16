@@ -20,6 +20,7 @@ public class Buyer extends User {
         this.preferredLocations = preferredLocations;
     }
 
+
     @Override
     public String displayDashboard() {
         // Polymorphism applied according to OOP assignment requirement Component 01
