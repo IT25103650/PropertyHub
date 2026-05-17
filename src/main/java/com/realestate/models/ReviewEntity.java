@@ -60,4 +60,15 @@ public class ReviewEntity {
     @Column(name = "status")
     private String status = STATUS_PENDING;
 
+    @Column(name = "created_at", updatable = false)
+    @Setter(AccessLevel.NONE)
+    private LocalDateTime createdAt;
+
+    // ─── Lifecycle hooks ───────────────────────────────────────────────────────
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        if (this.status == null) this.status = STATUS_PENDING;
+    }
+
 }
