@@ -1,6 +1,7 @@
 package com.realestate.models;
 
 public class Seller extends User {
+
     private String agencyName;
 
     // Implement Constructor
@@ -22,6 +23,7 @@ public class Seller extends User {
         this.agencyName = agencyName;
     }
 
+    // Implement Display Details Method(Override)
     @Override
     public String displayDashboard() {
         // Polymorphism applied according to OOP assignment requirement Component 05
