@@ -33,4 +33,6 @@ public abstract class Review {
     public String getComment() { return comment; }
     public void setComment(String comment) { this.comment = comment; }
 
+    public abstract String displayReview();
+
 }
