@@ -28,4 +28,36 @@ public class ReviewEntity {
     public static final String STATUS_APPROVED = "approved";
     public static final String STATUS_REJECTED = "rejected";
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "review_id")
+    private Integer reviewId;
+
+    /** FK to Users — the buyer who wrote the review. */
+    @Column(name = "reviewer_id", nullable = false)
+    private Integer reviewerId;
+
+    /** FK to Users — optional target agent/seller. */
+    @Column(name = "target_agent_id")
+    private Integer targetAgentId;
+
+    /** FK to Properties — optional target property. */
+    @Column(name = "target_property_id")
+    private Integer targetPropertyId;
+
+    /** Rating from 1 to 5 (inclusive). */
+    @Column(name = "rating", nullable = false)
+    private Integer rating;
+
+    /** Full review comment. */
+    @Column(name = "review_text", columnDefinition = "TEXT")
+    private String reviewText;
+
+    /**
+     * Moderation status.
+     * Allowed values: pending | approved | rejected
+     */
+    @Column(name = "status")
+    private String status = STATUS_PENDING;
+
 }
