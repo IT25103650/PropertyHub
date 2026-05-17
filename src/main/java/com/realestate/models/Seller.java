@@ -13,3 +13,19 @@ public class Seller extends User {
         this.agencyName = agencyName;
     }
 
+    // Impelemnet Getters And Setters
+    public String getAgencyName() {
+        return agencyName;
+    }
+
+    public void setAgencyName(String agencyName) {
+        this.agencyName = agencyName;
+    }
+
+    @Override
+    public String displayDashboard() {
+        // Polymorphism applied according to OOP assignment requirement Component 05
+        return "redirect:/seller-dashboard";
+    }
+}
+
