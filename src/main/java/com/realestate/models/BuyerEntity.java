@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
  * Component 01 - Buyer Management
  * Developer: [Student 1]
  *
- * Commit 2: Additional Fields & Lifecycle Hooks
  */
 @Entity
 @Table(name = "Users")
