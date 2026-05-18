@@ -6,4 +6,13 @@ public class Admin extends User{
     public Admin(){
         setRole("ADMIN");
     }
+
+    public Admin(String puserId, String pname, String pemail, String ppassword, String ppermissionLevel) {
+        super(puserId, pname, pemail, ppassword, "ADMIN");
+        this.permissionLevel = ppermissionLevel;
+    }
+
+    public String getPermissionLevel(){
+        return permissionLevel;
+    }
 }
