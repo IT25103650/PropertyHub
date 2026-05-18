@@ -4,13 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
-/**
- * JPA Entity representing a Seller user in the PropertyHub system.
- * Maps to the shared 'Users' table with role = 'seller'.
- *
- * Component 02 - Seller Management
- * Developer: [Student 2]
- */
+// Manages seller accounts linked to the main Users table for Component 2.
 @Entity
 @Table(name = "Users")
 @org.hibernate.annotations.Where(clause = "role IN ('seller','both')")
@@ -18,6 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class SellerEntity {
 
     public SellerEntity(String firstName, String lastName, String email, String passwordHash, String phone) {
@@ -66,7 +61,7 @@ public class SellerEntity {
     @Setter(AccessLevel.NONE)
     private LocalDateTime updatedAt;
 
-    // ─── Lifecycle hooks ───────────────────────────────────────────────────────
+    // Lifecycle hooks
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -79,7 +74,7 @@ public class SellerEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // ─── Custom Getters ────────────────────────────────────────────────────────
+    // Custom Getters
     public String getFullName() {
         return firstName + " " + lastName;
     }
