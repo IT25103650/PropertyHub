@@ -125,6 +125,24 @@ public class ReviewService {
         return ReviewRepository.save(existing);
     }
 
+    // ─── MODERATION ──────────────────────────────────────────────────────────────
+
+    /** Admin approves a review (makes it publicly visible). */
+    public ReviewEntity approveFeedback(Integer id) {
+        ReviewEntity feedback = ReviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Review not found: " + id));
+        feedback.setStatus(ReviewEntity.STATUS_APPROVED);
+        return ReviewRepository.save(feedback);
+    }
+
+    /** Admin rejects a review (hides it from public view). */
+    public ReviewEntity rejectFeedback(Integer id) {
+        ReviewEntity feedback = ReviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Review not found: " + id));
+        feedback.setStatus(ReviewEntity.STATUS_REJECTED);
+        return ReviewRepository.save(feedback);
+    }
+
 
 
 
