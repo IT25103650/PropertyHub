@@ -11,4 +11,20 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Integer> {
  * Component 06 - Feedback and Review Management
  */
 
+@Repository
+public interface ReviewRepository extends JpaRepository<ReviewEntity, Integer> {
+
+    /** All reviews written by a specific buyer/reviewer. */
+    List<ReviewEntity> findByReviewerIdOrderByCreatedAtDesc(Integer reviewerId);
+
+    /** All reviews for a specific property. */
+    List<ReviewEntity> findByTargetPropertyIdOrderByCreatedAtDesc(Integer propertyId);
+
+    /** All reviews targeting a specific seller/agent. */
+    List<ReviewEntity> findByTargetAgentIdOrderByCreatedAtDesc(Integer agentId);
+
+    /** All reviews by moderation status. */
+    List<ReviewEntity> findByStatusOrderByCreatedAtDesc(String status);
+
+
 }
