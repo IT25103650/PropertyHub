@@ -143,6 +143,18 @@ public class ReviewService {
         return ReviewRepository.save(feedback);
     }
 
+    // ─── DELETE ──────────────────────────────────────────────────────────────────
+
+    /**
+     * Delete a review permanently.
+     * Accessible by the author or an admin.
+     */
+    public void deleteFeedback(Integer id) {
+        if (!ReviewRepository.existsById(id)) {
+            throw new IllegalArgumentException("Review not found: " + id);
+        }
+        ReviewRepository.deleteById(id);
+    }
 
 
 
