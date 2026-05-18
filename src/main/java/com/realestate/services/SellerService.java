@@ -99,3 +99,24 @@ public class SellerService {
         seller.setIsActive(!seller.getIsActive());
         return sellerRepository.save(seller);
     }
+
+    // â”€â”€â”€ DELETE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+    /**
+     * Delete a seller account.
+     * Cascade cleanup of Properties/Bookings/Reviews is handled via DB FK or controller.
+     */
+    public void deleteSeller(Integer id) {
+        if (!sellerRepository.existsById(id)) {
+            throw new IllegalArgumentException("Seller not found: " + id);
+        }
+        sellerRepository.deleteById(id);
+    }
+
+    // â”€â”€â”€ VALIDATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+    @Transactional(readOnly = true)
+    public boolean isEmailAvailable(String email) {
+        return !sellerRepository.existsByEmail(email);
+    }
+}
