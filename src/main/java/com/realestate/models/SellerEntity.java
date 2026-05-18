@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 
 public class SellerEntity {
 
+    // Implement Constructor
     public SellerEntity(String firstName, String lastName, String email, String passwordHash, String phone) {
         this.firstName = firstName;
         this.lastName = lastName;
