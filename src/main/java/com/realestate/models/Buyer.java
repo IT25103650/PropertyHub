@@ -22,7 +22,7 @@ public class Buyer extends User {
 
     @Override
     public String displayDashboard() {
-        // Polymorphism applied according to OOP assignment requirement Component 01
+        // Polymorphism
         return "redirect:/buyer-dashboard";
     }
 }
