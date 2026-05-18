@@ -46,6 +46,58 @@ public class ReviewService {
         return ReviewRepository.save(feedback);
     }
 
+    // ─── READ ────────────────────────────────────────────────────────────────────
+
+    /** Get all feedback/reviews (admin use). */
+    @Transactional(readOnly = true)
+    public List<ReviewEntity> getAllFeedback() {
+        return ReviewRepository.findAll(
+                org.springframework.data.domain.Sort.by(
+                        org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
+    }
+
+    /** Get a single review by ID. */
+    @Transactional(readOnly = true)
+    public Optional<ReviewEntity> getFeedbackById(Integer id) {
+        return ReviewRepository.findById(id);
+    }
+
+    /** Get all reviews written by a specific buyer. */
+    @Transactional(readOnly = true)
+    public List<ReviewEntity> getFeedbackByReviewer(Integer reviewerId) {
+        return ReviewRepository.findByReviewerIdOrderByCreatedAtDesc(reviewerId);
+    }
+
+    /** Get all reviews for a specific property. */
+    @Transactional(readOnly = true)
+    public List<ReviewEntity> getFeedbackByProperty(Integer propertyId) {
+        return ReviewRepository.findByTargetPropertyIdOrderByCreatedAtDesc(propertyId);
+    }
+
+    /** Get approved reviews for a property (public display). */
+    @Transactional(readOnly = true)
+    public List<ReviewEntity> getApprovedFeedbackByProperty(Integer propertyId) {
+        return ReviewRepository.findApprovedByProperty(propertyId);
+    }
+
+    /** Get average rating for a property. */
+    @Transactional(readOnly = true)
+    public Double getAverageRatingForProperty(Integer propertyId) {
+        return ReviewRepository.avgRatingByProperty(propertyId);
+    }
+
+    /** Get all reviews by status (pending / approved / rejected). */
+    @Transactional(readOnly = true)
+    public List<ReviewEntity> getFeedbackByStatus(String status) {
+        return ReviewRepository.findByStatusOrderByCreatedAtDesc(status);
+    }
+
+    /** Count reviews by status. */
+    @Transactional(readOnly = true)
+    public long countByStatus(String status) {
+        return ReviewRepository.countByStatus(status);
+    }
+
 
 
 }
