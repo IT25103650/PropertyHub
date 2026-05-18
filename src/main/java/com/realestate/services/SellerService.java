@@ -10,12 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Service layer for Seller Management business logic.
- *
- * Component 02 - Seller Management
- * Developer: [Student 2]
- */
+    // Coordinates the core business logic
 @Service
 @Transactional
 public class SellerService {
@@ -23,13 +18,10 @@ public class SellerService {
     @Autowired
     private SellerRepository sellerRepository;
 
-    // â”€â”€â”€ CREATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // CREATE method
+        // Registers a new seller and checks that the email isn't already in use.
 
-    /**
-     * Register a new seller account.
-     * @throws IllegalArgumentException if email is already taken.
-     */
-    public SellerEntity createSeller(SellerEntity seller) {
+        public SellerEntity createSeller(SellerEntity seller) {
         if (sellerRepository.existsByEmail(seller.getEmail())) {
             throw new IllegalArgumentException("Email already registered: " + seller.getEmail());
         }
@@ -38,27 +30,26 @@ public class SellerService {
         return sellerRepository.save(seller);
     }
 
-    // â”€â”€â”€ READ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-    /** Get all sellers in the system. */
+    // READ Method
+    // Get all sellers in the system.
     @Transactional(readOnly = true)
     public List<SellerEntity> getAllSellers() {
         return sellerRepository.findAllSellers();
     }
 
-    /** Get a seller by ID. */
+    // Get a seller by ID.
     @Transactional(readOnly = true)
     public Optional<SellerEntity> getSellerById(Integer id) {
         return sellerRepository.findById(id);
     }
 
-    /** Get a seller by email. */
+    // Get a seller by email.
     @Transactional(readOnly = true)
     public Optional<SellerEntity> getSellerByEmail(String email) {
         return sellerRepository.findByEmail(email);
     }
 
-    /** Search sellers by keyword. */
+    // Search sellers by keyword.
     @Transactional(readOnly = true)
     public List<SellerEntity> searchSellers(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
@@ -67,13 +58,10 @@ public class SellerService {
         return sellerRepository.searchSellers(keyword.trim());
     }
 
-    // â”€â”€â”€ UPDATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // UPDATE Method
+        // Updates profile details for an existing seller
 
-    /**
-     * Update seller profile information.
-     * @throws IllegalArgumentException if seller not found.
-     */
-    public SellerEntity updateSeller(Integer id, SellerEntity updatedData) {
+        public SellerEntity updateSeller(Integer id, SellerEntity updatedData) {
         SellerEntity existing = sellerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Seller not found: " + id));
 
@@ -92,7 +80,7 @@ public class SellerService {
         return sellerRepository.save(existing);
     }
 
-    /** Toggle seller active/inactive status. */
+    // Toggle seller active/inactive status.
     public SellerEntity toggleSellerStatus(Integer id) {
         SellerEntity seller = sellerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Seller not found: " + id));
@@ -100,21 +88,17 @@ public class SellerService {
         return sellerRepository.save(seller);
     }
 
-    // â”€â”€â”€ DELETE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // DELETE Method
+        // Removes a seller account and details
 
-    /**
-     * Delete a seller account.
-     * Cascade cleanup of Properties/Bookings/Reviews is handled via DB FK or controller.
-     */
-    public void deleteSeller(Integer id) {
+        public void deleteSeller(Integer id) {
         if (!sellerRepository.existsById(id)) {
             throw new IllegalArgumentException("Seller not found: " + id);
         }
         sellerRepository.deleteById(id);
     }
 
-    // â”€â”€â”€ VALIDATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
+    // VALIDATION
     @Transactional(readOnly = true)
     public boolean isEmailAvailable(String email) {
         return !sellerRepository.existsByEmail(email);
