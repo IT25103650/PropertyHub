@@ -66,3 +66,36 @@ public class SellerService {
         }
         return sellerRepository.searchSellers(keyword.trim());
     }
+
+    // â”€â”€â”€ UPDATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+    /**
+     * Update seller profile information.
+     * @throws IllegalArgumentException if seller not found.
+     */
+    public SellerEntity updateSeller(Integer id, SellerEntity updatedData) {
+        SellerEntity existing = sellerRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Seller not found: " + id));
+
+        existing.setFirstName(updatedData.getFirstName());
+        existing.setLastName(updatedData.getLastName());
+        existing.setEmail(updatedData.getEmail());
+        existing.setPhone(updatedData.getPhone());
+
+        if (updatedData.getPasswordHash() != null && !updatedData.getPasswordHash().isBlank()) {
+            existing.setPasswordHash(updatedData.getPasswordHash());
+        }
+        if (updatedData.getProfileImageUrl() != null && !updatedData.getProfileImageUrl().isBlank()) {
+            existing.setProfileImageUrl(updatedData.getProfileImageUrl());
+        }
+
+        return sellerRepository.save(existing);
+    }
+
+    /** Toggle seller active/inactive status. */
+    public SellerEntity toggleSellerStatus(Integer id) {
+        SellerEntity seller = sellerRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Seller not found: " + id));
+        seller.setIsActive(!seller.getIsActive());
+        return sellerRepository.save(seller);
+    }
