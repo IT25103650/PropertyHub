@@ -9,14 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Service layer for Buyer Management business logic.
- *
- * Component 01 - Buyer Management
- * Developer: [Student 1]
- *
- * Commit 3: DELETE operations (Complete CRUD)
- */
+
 @Service
 @Transactional
 public class BuyerService {
@@ -24,9 +17,7 @@ public class BuyerService {
     @Autowired
     private BuyerRepository buyerRepository;
 
-    //
     // Create Operations
-    //
 
     public BuyerEntity createBuyer(BuyerEntity buyer) {
         if (buyerRepository.existsByEmail(buyer.getEmail())) {
@@ -37,9 +28,7 @@ public class BuyerService {
         return buyerRepository.save(buyer);
     }
 
-    //
     // Read Operations
-    //
 
     @Transactional(readOnly = true)
     public List<BuyerEntity> getAllBuyers() {
@@ -74,9 +63,8 @@ public class BuyerService {
         return !buyerRepository.existsByEmail(email);
     }
 
-    //
+
     // Update Operations
-    //
 
     public BuyerEntity updateBuyer(Integer id, BuyerEntity updatedData) {
         BuyerEntity existing = buyerRepository.findById(id)
@@ -104,14 +92,11 @@ public class BuyerService {
         return buyerRepository.save(buyer);
     }
 
-    //
-    // Delete Operations
-    //
 
-    /**
-     * Permanently delete a buyer account.
-     * Note: related records (bookings, saved properties, reviews) cascade via DB FK constraints.
-     */
+    // Delete Operations
+
+
+
     public void deleteBuyer(Integer id) {
         if (!buyerRepository.existsById(id)) {
             throw new IllegalArgumentException("Buyer not found: " + id);
