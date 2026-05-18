@@ -12,7 +12,9 @@ import java.util.Optional;
 
 /**
  * Service layer for Admin Management business logic.
-
+ * All admin-specific operations are centralised here.
+ *
+ * Component 05 - Admin Management
  * Developer: [Student 5]
  */
 @Service
