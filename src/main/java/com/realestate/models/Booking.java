@@ -1,5 +1,6 @@
 package com.realestate.models;
 
+// Implement abstract class
 public abstract class Booking {
     private String bookingId;
     private String buyerId;
