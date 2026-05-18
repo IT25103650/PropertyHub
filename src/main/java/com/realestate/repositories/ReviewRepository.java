@@ -41,4 +41,10 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Integer> {
             "f.targetPropertyId = :propertyId AND f.status = 'approved'")
     Double avgRatingByProperty(@Param("propertyId") Integer propertyId);
 
+    /** Count reviews by status. */
+    long countByStatus(String status);
+
+    /** Count reviews written by a specific buyer. */
+    long countByReviewerId(Integer reviewerId);
+
 }
