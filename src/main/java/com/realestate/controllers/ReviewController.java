@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-/**
- * ReviewController â€” handles all review/feedback submission endpoints.
- */
+//ReviewController handles all review/feedback submission endpoints.
+
 @Controller
 public class ReviewController {
 
@@ -23,7 +22,7 @@ public class ReviewController {
     @Autowired
     private BookingService bookingService;
 
-    // â”€â”€â”€ POST: Submit Agent / Seller Review â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //POST: Submit Agent / Seller Review
     @PostMapping("/submit-agent-review")
     public String submitAgentReview(
             @RequestParam("agentId")     int agentId,
@@ -53,7 +52,7 @@ public class ReviewController {
         }
     }
 
-    // â”€â”€â”€ POST: Submit Property Review â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //POST: Submit Property Review
     @PostMapping("/submit-review")
     public String submitPropertyReview(
             @RequestParam("user_id")            int userId,
@@ -98,7 +97,7 @@ public class ReviewController {
         }
     }
 
-    // â”€â”€â”€ POST: Submit General Site Review â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //POST: Submit General Site Review
     @PostMapping("/submit-site-review")
     public String submitSiteReview(
             @RequestParam("rating")      int rating,
@@ -126,7 +125,7 @@ public class ReviewController {
         }
     }
 
-    // ─── UPDATE REVIEW (Buyer) ──────────────────────────────────────────────
+    //UPDATE REVIEW (Buyer)
     @PostMapping("/buyer-dashboard/update-review")
     public String updateReview(
             @RequestParam("review_id") int reviewId,
@@ -145,7 +144,7 @@ public class ReviewController {
         return "redirect:/buyer-dashboard?section=reviews&updated=true";
     }
 
-    // ─── DELETE REVIEW (Buyer) ──────────────────────────────────────────────
+    //DELETE REVIEW (Buyer)
     @GetMapping("/buyer-dashboard/delete-review")
     public String deleteReview(@RequestParam("id") int reviewId, HttpSession session) {
         Object userIdObj = session.getAttribute("userId");
