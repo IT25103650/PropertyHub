@@ -15,7 +15,7 @@ import java.util.Optional;
  * Component 01 - Buyer Management
  * Developer: [Student 1]
  *
- * Commit 2: UPDATE operations (existing CREATE/READ retained)
+ * Commit 3: DELETE operations (Complete CRUD)
  */
 @Service
 @Transactional
@@ -78,10 +78,6 @@ public class BuyerService {
     // Update Operations
     //
 
-    /**
-     * Update buyer profile information.
-     * @throws IllegalArgumentException if buyer not found.
-     */
     public BuyerEntity updateBuyer(Integer id, BuyerEntity updatedData) {
         BuyerEntity existing = buyerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Buyer not found: " + id));
@@ -91,11 +87,9 @@ public class BuyerService {
         existing.setEmail(updatedData.getEmail());
         existing.setPhone(updatedData.getPhone());
 
-        // Only update password if a new one is provided
         if (updatedData.getPasswordHash() != null && !updatedData.getPasswordHash().isBlank()) {
             existing.setPasswordHash(updatedData.getPasswordHash());
         }
-        // Only update profile image if provided
         if (updatedData.getProfileImageUrl() != null && !updatedData.getProfileImageUrl().isBlank()) {
             existing.setProfileImageUrl(updatedData.getProfileImageUrl());
         }
@@ -103,11 +97,25 @@ public class BuyerService {
         return buyerRepository.save(existing);
     }
 
-    /** Toggle buyer active/inactive status (used by admin). */
     public BuyerEntity toggleBuyerStatus(Integer id) {
         BuyerEntity buyer = buyerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Buyer not found: " + id));
         buyer.setIsActive(!buyer.getIsActive());
         return buyerRepository.save(buyer);
+    }
+
+    //
+    // Delete Operations
+    //
+
+    /**
+     * Permanently delete a buyer account.
+     * Note: related records (bookings, saved properties, reviews) cascade via DB FK constraints.
+     */
+    public void deleteBuyer(Integer id) {
+        if (!buyerRepository.existsById(id)) {
+            throw new IllegalArgumentException("Buyer not found: " + id);
+        }
+        buyerRepository.deleteById(id);
     }
 }
