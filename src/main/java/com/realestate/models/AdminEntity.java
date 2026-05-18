@@ -30,4 +30,21 @@ public class AdminEntity {
 
     @Column(name = "role", nullable = false)
     private String role = "admin";
+
+    @Column(name = "phone", length = 20)
+    private String phone;
+
+    @Column(name = "profile_image_url", length = 255)
+    private String profileImageUrl;
+
+    @Column(name = "is_active")
+    private Boolean isActive = true;
+
+    @Column(name = "created_at", updatable = false)
+    @Setter(AccessLevel.NONE)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    @Setter(AccessLevel.NONE)
+    private LocalDateTime updatedAt;
 }
