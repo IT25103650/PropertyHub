@@ -9,45 +9,40 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Repository interface for Feedback/Review data access.
- *
- * Component 06 - Feedback and Review Management
- */
+// Repository for accessing feedback and review data.
+// Component 06 - Feedback and Review Management
+
 @Repository
 public interface ReviewRepository extends JpaRepository<ReviewEntity, Integer> {
 
-    /** All reviews written by a specific buyer/reviewer. */
+    //All reviews written by a specific buyer/reviewer.
     List<ReviewEntity> findByReviewerIdOrderByCreatedAtDesc(Integer reviewerId);
 
-    /** All reviews for a specific property. */
+    //All reviews for a specific property.
     List<ReviewEntity> findByTargetPropertyIdOrderByCreatedAtDesc(Integer propertyId);
 
-    /** All reviews targeting a specific seller/agent. */
+    //All reviews targeting a specific seller/agent.
     List<ReviewEntity> findByTargetAgentIdOrderByCreatedAtDesc(Integer agentId);
 
-    /** All reviews by moderation status. */
+    //All reviews by moderation status.
     List<ReviewEntity> findByStatusOrderByCreatedAtDesc(String status);
 
-    /**
-     * All approved reviews for a specific property (shown publicly on property page).
-     */
+    // Retrieves all approved reviews for a property (visible on public listing page).
+
     @Query("SELECT f FROM ReviewEntity f WHERE " +
             "f.targetPropertyId = :propertyId AND f.status = 'approved' " +
             "ORDER BY f.createdAt DESC")
     List<ReviewEntity> findApprovedByProperty(@Param("propertyId") Integer propertyId);
 
-    /**
-     * Average rating for a specific property (approved reviews only).
-     */
+    // Calculates the average rating of approved reviews for a property.
     @Query("SELECT AVG(f.rating) FROM ReviewEntity f WHERE " +
             "f.targetPropertyId = :propertyId AND f.status = 'approved'")
     Double avgRatingByProperty(@Param("propertyId") Integer propertyId);
 
-    /** Count reviews by status. */
+    //Count reviews by status
     long countByStatus(String status);
 
-    /** Count reviews written by a specific buyer. */
+    //Count reviews written by a specific buyer.
     long countByReviewerId(Integer reviewerId);
 }
 
