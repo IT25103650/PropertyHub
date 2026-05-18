@@ -21,72 +21,91 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-/**
- * Controller for Buyer Dashboard - Manages buyer profile and dashboard view.
- *
- * Component 01 - Buyer Management
- * Developer: [Student 1]
- *
- */
 @Controller
 public class BuyerDashboardController {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    // ============================================================
-    // DASHBOARD DISPLAY WITH PROFILE
-    // ============================================================
-
     @GetMapping("/buyer-dashboard")
     public String buyerDashboard(HttpSession session, Model model) {
+        // ... (same as Commit 1)
+        return "BuyerManagement/buyer-dashboard";
+    }
+
+    // ============================================================
+    // PROFILE MANAGEMENT
+    // ============================================================
+
+    @PostMapping("/buyer-dashboard/update-profile")
+    public String updateProfile(
+            @RequestParam("name")  String name,
+            @RequestParam("email") String email,
+            @RequestParam(value = "phone", required = false) String phone,
+            @RequestParam(value = "profileImageFile", required = false) MultipartFile profileImage,
+            HttpSession session) {
 
         Object userIdObj = session.getAttribute("userId");
         if (userIdObj == null) return "redirect:/login";
-
-        String role = (String) session.getAttribute("userRole");
-        // STRICT: only buyer or both can access the buyer dashboard
-        if ("seller".equalsIgnoreCase(role)) {
-            return "redirect:/seller-dashboard?denied=buyer";
-        }
         int userId = Integer.parseInt(userIdObj.toString());
 
+        // Split name into first/last
+        String[] parts = name.trim().split("\\s+", 2);
+        String firstName = parts[0];
+        String lastName  = parts.length > 1 ? parts[1] : "";
+
         try {
-            // --- User Profile ---
-            Map<String, Object> user = jdbcTemplate.queryForMap(
-                    "SELECT first_name, last_name, email, phone, profile_image_url FROM Users WHERE user_id = ?", userId);
+            String profileImageUrl = null;
+            if (profileImage != null && !profileImage.isEmpty()) {
+                String uploadDir = "uploads" + File.separator;
+                Path uploadPath = Paths.get(uploadDir);
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+                String origName = profileImage.getOriginalFilename();
+                String ext = (origName != null && origName.contains("."))
+                        ? origName.substring(origName.lastIndexOf('.')) : ".jpg";
+                String fileName = "profile_" + UUID.randomUUID().toString() + ext;
+                Path dest = Paths.get(uploadDir + fileName);
+                Files.copy(profileImage.getInputStream(), dest);
+                profileImageUrl = "/uploads/" + fileName;
+            }
 
-            String firstName = user.get("first_name") != null ? (String) user.get("first_name") : "";
-            String lastName  = user.get("last_name")  != null ? (String) user.get("last_name")  : "";
-            String initials  = (firstName.length() > 0 ? String.valueOf(firstName.charAt(0)) : "?") +
-                    (lastName.length()  > 0 ? String.valueOf(lastName.charAt(0))  : "");
+            if (profileImageUrl != null) {
+                jdbcTemplate.update(
+                        "UPDATE Users SET first_name=?, last_name=?, email=?, phone=?, profile_image_url=? WHERE user_id=?",
+                        firstName, lastName, email, phone, profileImageUrl, userId);
+                session.setAttribute("userProfileImage", profileImageUrl);
+            } else {
+                jdbcTemplate.update(
+                        "UPDATE Users SET first_name=?, last_name=?, email=?, phone=? WHERE user_id=?",
+                        firstName, lastName, email, phone, userId);
+            }
 
-            model.addAttribute("fullName",    firstName + " " + lastName);
-            model.addAttribute("initials",    initials.toUpperCase());
-            model.addAttribute("email",       user.get("email"));
-            model.addAttribute("phone",       user.getOrDefault("phone", ""));
-            model.addAttribute("welcomeName", firstName);
-            model.addAttribute("profileImage", user.getOrDefault("profile_image_url", ""));
+            // Refresh session name
+            session.setAttribute("userName", name);
+            session.setAttribute("userEmail", email);
         } catch (Exception e) {
-            model.addAttribute("fullName", "User");
-            model.addAttribute("initials", "U");
-            model.addAttribute("email", "");
-            model.addAttribute("phone", "");
-            model.addAttribute("welcomeName", "User");
+            e.printStackTrace();
+            return "redirect:/buyer-dashboard?error=update_failed";
         }
 
-        // Empty collections for other sections (to be added in future commits)
-        model.addAttribute("bookings", java.util.Collections.emptyList());
-        model.addAttribute("bookingCount", 0);
-        model.addAttribute("savedProperties", java.util.Collections.emptyList());
-        model.addAttribute("savedCount", 0);
-        model.addAttribute("reviews", java.util.Collections.emptyList());
-        model.addAttribute("reviewCount", 0);
-        model.addAttribute("allProperties", java.util.Collections.emptyList());
-        model.addAttribute("inquiries", java.util.Collections.emptyList());
-        model.addAttribute("inquiryCount", 0);
-        model.addAttribute("unreadReplies", 0);
+        return "redirect:/buyer-dashboard?updated=true";
+    }
 
-        return "BuyerManagement/buyer-dashboard";
+    @PostMapping("/buyer-dashboard/delete-account")
+    public String deleteBuyerAccount(HttpSession session) {
+        Object userIdObj = session.getAttribute("userId");
+        if (userIdObj == null) return "redirect:/login";
+        int userId = Integer.parseInt(userIdObj.toString());
+
+        // Cascade: delete related records first
+        jdbcTemplate.update("DELETE FROM Bookings WHERE buyer_id = ?", userId);
+        jdbcTemplate.update("DELETE FROM Saved_Properties WHERE buyer_id = ?", userId);
+        jdbcTemplate.update("DELETE FROM Reviews WHERE reviewer_id = ?", userId);
+        jdbcTemplate.update("DELETE FROM Users WHERE user_id = ?", userId);
+
+        session.invalidate();
+        return "redirect:/?account_deleted=true";
     }
 }
