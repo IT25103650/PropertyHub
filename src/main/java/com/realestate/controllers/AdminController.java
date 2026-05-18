@@ -298,4 +298,210 @@ class LegacyAdminController {
         return "redirect:/admin-dashboard?panel=properties&updated=true";
     }
 
+    // â”€â”€â”€ DELETE PROPERTY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    @GetMapping("/admin/delete-property")
+    public String deleteProperty(@RequestParam("id") int propertyId, HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/login";
+        jdbcTemplate.update("DELETE FROM Property_Images WHERE property_id = ?", propertyId);
+        jdbcTemplate.update("DELETE FROM Bookings WHERE property_id = ?", propertyId);
+        jdbcTemplate.update("DELETE FROM Reviews WHERE target_property_id = ?", propertyId);
+        jdbcTemplate.update("DELETE FROM Saved_Properties WHERE property_id = ?", propertyId);
+        jdbcTemplate.update("DELETE FROM Inquiries WHERE property_id = ?", propertyId);
+        jdbcTemplate.update("DELETE FROM Properties WHERE property_id = ?", propertyId);
+        logAdminAction(session, "DELETE_PROPERTY", "Deleted property ID: " + propertyId);
+        return "redirect:/admin-dashboard?panel=properties&deleted=true";
+    }
+
+    // â”€â”€â”€ APPROVE REVIEW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    @GetMapping("/admin/approve-review")
+    public String approveReview(@RequestParam("id") int reviewId, HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/login";
+        try {
+            reviewService.approveFeedback(reviewId);
+        } catch (Exception e) { e.printStackTrace(); }
+        logAdminAction(session, "APPROVE_REVIEW", "Approved review ID: " + reviewId);
+        return "redirect:/admin-dashboard?panel=reviews&approved=true";
+    }
+
+    // â”€â”€â”€ DELETE REVIEW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    @GetMapping("/admin/delete-review")
+    public String deleteReview(@RequestParam("id") int reviewId, HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/login";
+        try {
+            reviewService.deleteFeedback(reviewId);
+        } catch (Exception e) { e.printStackTrace(); }
+        logAdminAction(session, "DELETE_REVIEW", "Deleted review ID: " + reviewId);
+        return "redirect:/admin-dashboard?panel=reviews&deleted=true";
+    }
+
+    // â”€â”€â”€ UPDATE REVIEW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    @PostMapping("/admin/update-review")
+    public String updateReview(
+            @RequestParam("review_id") int reviewId,
+            @RequestParam("rating") int rating,
+            @RequestParam("review_text") String reviewText,
+            HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/login";
+
+        jdbcTemplate.update(
+                "UPDATE Reviews SET rating = ?, review_text = ? WHERE review_id = ?",
+                rating, reviewText, reviewId
+        );
+        logAdminAction(session, "UPDATE_REVIEW", "Updated review ID: " + reviewId);
+        return "redirect:/admin-dashboard?panel=reviews&updated=true";
+    }
+
+    // â”€â”€â”€ DELETE BOOKING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    @GetMapping("/admin/delete-booking")
+    public String deleteBooking(@RequestParam("id") int bookingId, HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/login";
+        try {
+            bookingService.deleteBooking(bookingId);
+        } catch (Exception e) { e.printStackTrace(); }
+        logAdminAction(session, "DELETE_BOOKING", "Deleted booking ID: " + bookingId);
+        return "redirect:/admin-dashboard?panel=bookings&deleted=true";
+    }
+
+    // â”€â”€â”€ UPDATE BOOKING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    @PostMapping("/admin/update-booking")
+    public String updateBooking(
+            @RequestParam("booking_id") int bookingId,
+            @RequestParam("booking_date") String bookingDate,
+            @RequestParam("booking_time") String bookingTime,
+            @RequestParam("status") String status,
+            HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/login";
+        jdbcTemplate.update(
+                "UPDATE Bookings SET booking_date = ?, booking_time = ?, status = ? WHERE booking_id = ?",
+                bookingDate, bookingTime, status, bookingId
+        );
+        logAdminAction(session, "UPDATE_BOOKING", "Updated booking ID: " + bookingId);
+        return "redirect:/admin-dashboard?panel=bookings&updated=true";
+    }
+
+    // â”€â”€â”€ LOGOUT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    @GetMapping("/admin/logout")
+    public String adminLogout(HttpSession session) {
+        if (isAdmin(session)) {
+            logAdminAction(session, "ADMIN_LOGOUT", "Admin logged out: " + session.getAttribute("userEmail"));
+        }
+        session.invalidate();
+        return "redirect:/admin-login";
+    }
+
+    // â”€â”€â”€ ADD PROPERTY IMAGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    @PostMapping("/admin/add-image")
+    public String addPropertyImage(
+            @RequestParam("property_id") int propertyId,
+            @RequestParam("image_file")  org.springframework.web.multipart.MultipartFile imageFile,
+            @RequestParam(value = "is_primary", required = false) String isPrimaryStr,
+            HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/login";
+
+        try {
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String uploadDir = "uploads" + java.io.File.separator;
+                java.nio.file.Path uploadPath = java.nio.file.Paths.get(uploadDir);
+                if (!java.nio.file.Files.exists(uploadPath)) {
+                    java.nio.file.Files.createDirectories(uploadPath);
+                }
+                String origName = imageFile.getOriginalFilename();
+                String ext = (origName != null && origName.contains(".")) ? origName.substring(origName.lastIndexOf('.')) : ".jpg";
+                String fileName = "admin_prop_" + java.util.UUID.randomUUID().toString() + ext;
+                java.nio.file.Path dest = java.nio.file.Paths.get(uploadDir + fileName);
+                java.nio.file.Files.copy(imageFile.getInputStream(), dest);
+                String imageUrl = "/uploads/" + fileName;
+
+                boolean isPrimary = "true".equals(isPrimaryStr);
+                if (isPrimary) {
+                    // Clear existing primary first
+                    jdbcTemplate.update("UPDATE Property_Images SET is_primary = false WHERE property_id = ?", propertyId);
+                }
+                jdbcTemplate.update(
+                        "INSERT INTO Property_Images (property_id, image_url, is_primary) VALUES (?, ?, ?)",
+                        propertyId, imageUrl, isPrimary);
+                logAdminAction(session, "ADD_IMAGE", "Added image to property ID: " + propertyId);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:/admin-dashboard?panel=properties&updated=true";
+    }
+
+    // â”€â”€â”€ DELETE PROPERTY IMAGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    @PostMapping("/admin/update-image")
+    public String adminUpdateImage(
+            @RequestParam("image_id")    int imageId,
+            @RequestParam("property_id") int propertyId,
+            @RequestParam("image_url")   String imageUrl,
+            HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/login";
+        jdbcTemplate.update("UPDATE Property_Images SET image_url = ? WHERE image_id = ? AND property_id = ?", imageUrl, imageId, propertyId);
+        logAdminAction(session, "UPDATE_IMAGE", "Updated image ID: " + imageId + " for property: " + propertyId);
+        return "redirect:/admin-dashboard?panel=properties&updated=true";
+    }
+
+    @GetMapping("/admin/delete-image")
+    public String deletePropertyImage(
+            @RequestParam("image_id")    int imageId,
+            @RequestParam("property_id") int propertyId,
+            HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/login";
+        jdbcTemplate.update("DELETE FROM Property_Images WHERE image_id = ?", imageId);
+        logAdminAction(session, "DELETE_IMAGE", "Deleted image ID: " + imageId + " from property ID: " + propertyId);
+        return "redirect:/admin-dashboard?panel=properties&updated=true";
+    }
+
+    // â”€â”€â”€ SET PRIMARY PROPERTY IMAGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    @GetMapping("/admin/set-primary-image")
+    public String setPrimaryImage(
+            @RequestParam("image_id")    int imageId,
+            @RequestParam("property_id") int propertyId,
+            HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/login";
+        // Unset all primaries for this property, then set the chosen one
+        jdbcTemplate.update("UPDATE Property_Images SET is_primary = false WHERE property_id = ?", propertyId);
+        jdbcTemplate.update("UPDATE Property_Images SET is_primary = true  WHERE image_id = ?",   imageId);
+        logAdminAction(session, "SET_PRIMARY_IMAGE", "Set image ID: " + imageId + " as primary for property ID: " + propertyId);
+        return "redirect:/admin-dashboard?panel=properties&updated=true";
+    }
+
+    // â”€â”€â”€ GENERATE USER REPORT (uses UserReport model) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    @GetMapping("/admin/generate-report")
+    public String generateUserReport(
+            @RequestParam(value = "role", required = false, defaultValue = "all") String role,
+            HttpSession session, Model model) {
+        if (!isAdmin(session)) return "redirect:/login";
+
+        String adminId = session.getAttribute("userId").toString();
+        String now     = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
+
+        // Build and invoke the UserReport model object
+        UserReport report = new UserReport("RPT-" + System.currentTimeMillis(), adminId, now, role);
+        report.generateReport(); // prints to console / could be extended
+        try {
+            jdbcTemplate.update("INSERT INTO Reports (report_id, generated_by, generated_at, filter_role) VALUES (?, ?, ?, ?)",
+                    report.getReportId(), report.getGeneratedBy(), report.getGeneratedAt(), report.getFilterRole());
+        } catch(Exception ignored) {}
+
+        // Query filtered user list
+        List<Map<String, Object>> reportUsers;
+        if ("all".equalsIgnoreCase(role)) {
+            reportUsers = jdbcTemplate.queryForList(
+                    "SELECT user_id, first_name, last_name, email, role, is_active, created_at FROM Users ORDER BY created_at DESC");
+        } else {
+            reportUsers = jdbcTemplate.queryForList(
+                    "SELECT user_id, first_name, last_name, email, role, is_active, created_at FROM Users WHERE role = ? ORDER BY created_at DESC", role);
+        }
+
+        adminDashboard(session, model);
+        model.addAttribute("reportUsers", reportUsers);
+        model.addAttribute("reportRole",  role);
+        model.addAttribute("reportId",    report.getReportId());
+        model.addAttribute("reportAt",    report.getGeneratedAt());
+        model.addAttribute("totalRows",   reportUsers.size());
+
+        logAdminAction(session, "GENERATE_REPORT", "Generated user report with role filter: " + role + " (" + reportUsers.size() + " users)");
+        return "AdminManagement/admin-dashboard";
+    }
 }
