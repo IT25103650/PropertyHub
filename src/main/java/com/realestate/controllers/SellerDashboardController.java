@@ -408,7 +408,7 @@ public class SellerDashboardController {
         return "redirect:/seller-dashboard/edit-property?id=" + propertyId + "&updated=true";
     }
 
-    // DELETE PROPERTY IMAGE (Seller)
+    // DELETE PROPERTY IMAGE
     @GetMapping("/seller-dashboard/delete-image")
     public String deleteImage(
             @RequestParam("image_id")    int imageId,
@@ -425,7 +425,7 @@ public class SellerDashboardController {
         return "redirect:/seller-dashboard/edit-property?id=" + propertyId + "&updated=true";
     }
 
-    // SET PRIMARY IMAGE (Seller)
+    // SET PRIMARY IMAGE
     @GetMapping("/seller-dashboard/set-primary-image")
     public String setPrimaryImage(
             @RequestParam("image_id")    int imageId,
