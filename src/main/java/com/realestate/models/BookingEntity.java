@@ -53,3 +53,28 @@ public class BookingEntity {
 
     @Column(name = "booking_time", nullable = false)
     private LocalTime bookingTime;
+	
+	/**
+     * Booking lifecycle status.
+     * Allowed values: pending | confirmed | completed | cancelled
+     */
+    @Column(name = "status")
+    private String status = STATUS_PENDING;
+
+    /** Optional notes from the buyer. */
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
+
+    @Column(name = "created_at", updatable = false)
+    @Setter(AccessLevel.NONE)
+    private LocalDateTime createdAt;
+
+    // ─── Lifecycle hooks ───────────────────────────────────────────────────────
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        if (this.status == null)      this.status      = STATUS_PENDING;
+        if (this.viewingType == null) this.viewingType = "physical";
+    }
+}
+
