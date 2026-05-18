@@ -47,4 +47,22 @@ public class AdminEntity {
     @Column(name = "updated_at")
     @Setter(AccessLevel.NONE)
     private LocalDateTime updatedAt;
+
+    // ─── Lifecycle hooks ───────────────────────────────────────────────────────
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        if (this.role == null) this.role = "admin";
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // ─── Custom Getters ────────────────────────────────────────────────────────
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 }
