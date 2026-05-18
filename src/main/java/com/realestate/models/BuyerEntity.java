@@ -4,18 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
-/**
- * JPA Entity representing a Buyer user in the PropertyHub system.
- * Maps to the shared 'Users' table with role = 'buyer'.
- *
- * The @Where clause ensures this entity only ever reads/writes rows
- * where role IN ('buyer','both'), preventing conflicts with SellerEntity
- * and AdminEntity which share the same table.
- *
- * Component 01 - Buyer Management
- * Developer: [Student 1]
- *
- */
+
 @Entity
 @Table(name = "Users")
 @org.hibernate.annotations.Where(clause = "role IN ('buyer','both')")
