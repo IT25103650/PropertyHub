@@ -7,3 +7,13 @@ public class PhysicalViewing extends Booking {
         super(bookingId, buyerId, propertyId, bookingDate, status);
         this.assignedAgentId = assignedAgentId;
     }
+	
+    public String getAssignedAgentId() { return assignedAgentId; }
+    public void setAssignedAgentId(String assignedAgentId) { this.assignedAgentId = assignedAgentId; }
+
+    @Override
+    public String confirmBooking() {
+        setStatus("confirmed");
+        return "Physical viewing confirmed with Agent: " + assignedAgentId;
+    }
+}
