@@ -15,6 +15,7 @@ import java.util.Optional;
  * Component 01 - Buyer Management
  * Developer: [Student 1]
  *
+ * Commit 2: UPDATE operations (existing CREATE/READ retained)
  */
 @Service
 @Transactional
@@ -27,10 +28,6 @@ public class BuyerService {
     // Create Operations
     //
 
-    /**
-     * Register a new buyer account.
-     * @throws IllegalArgumentException if email is already taken.
-     */
     public BuyerEntity createBuyer(BuyerEntity buyer) {
         if (buyerRepository.existsByEmail(buyer.getEmail())) {
             throw new IllegalArgumentException("Email already registered: " + buyer.getEmail());
@@ -44,25 +41,21 @@ public class BuyerService {
     // Read Operations
     //
 
-    /** Get all buyers in the system. */
     @Transactional(readOnly = true)
     public List<BuyerEntity> getAllBuyers() {
         return buyerRepository.findAllBuyers();
     }
 
-    /** Get a buyer by their primary key. */
     @Transactional(readOnly = true)
     public Optional<BuyerEntity> getBuyerById(Integer id) {
         return buyerRepository.findById(id);
     }
 
-    /** Get a buyer by their email address. */
     @Transactional(readOnly = true)
     public Optional<BuyerEntity> getBuyerByEmail(String email) {
         return buyerRepository.findByEmail(email);
     }
 
-    /** Search buyers by name or email keyword. */
     @Transactional(readOnly = true)
     public List<BuyerEntity> searchBuyers(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
@@ -71,16 +64,50 @@ public class BuyerService {
         return buyerRepository.searchBuyers(keyword.trim());
     }
 
-    /** Count total buyers. */
     @Transactional(readOnly = true)
     public long countBuyers() {
         return buyerRepository.findAllBuyers().size();
     }
 
-    /** Check if an email is available for registration. */
     @Transactional(readOnly = true)
     public boolean isEmailAvailable(String email) {
         return !buyerRepository.existsByEmail(email);
     }
-}
 
+    //
+    // Update Operations
+    //
+
+    /**
+     * Update buyer profile information.
+     * @throws IllegalArgumentException if buyer not found.
+     */
+    public BuyerEntity updateBuyer(Integer id, BuyerEntity updatedData) {
+        BuyerEntity existing = buyerRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Buyer not found: " + id));
+
+        existing.setFirstName(updatedData.getFirstName());
+        existing.setLastName(updatedData.getLastName());
+        existing.setEmail(updatedData.getEmail());
+        existing.setPhone(updatedData.getPhone());
+
+        // Only update password if a new one is provided
+        if (updatedData.getPasswordHash() != null && !updatedData.getPasswordHash().isBlank()) {
+            existing.setPasswordHash(updatedData.getPasswordHash());
+        }
+        // Only update profile image if provided
+        if (updatedData.getProfileImageUrl() != null && !updatedData.getProfileImageUrl().isBlank()) {
+            existing.setProfileImageUrl(updatedData.getProfileImageUrl());
+        }
+
+        return buyerRepository.save(existing);
+    }
+
+    /** Toggle buyer active/inactive status (used by admin). */
+    public BuyerEntity toggleBuyerStatus(Integer id) {
+        BuyerEntity buyer = buyerRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Buyer not found: " + id));
+        buyer.setIsActive(!buyer.getIsActive());
+        return buyerRepository.save(buyer);
+    }
+}
