@@ -98,6 +98,34 @@ public class ReviewService {
         return ReviewRepository.countByStatus(status);
     }
 
+    // ─── UPDATE ──────────────────────────────────────────────────────────────────
+
+    /**
+     * Update a review's rating and text.
+     * When requestingUserId is null it means admin is calling — skip ownership check.
+     * Status restriction removed: admin and buyers can edit reviews in any state.
+     *
+     * @throws IllegalArgumentException if review not found.
+     */
+    public ReviewEntity updateFeedback(Integer id, int newRating, String newText, Integer requestingUserId) {
+        ReviewEntity existing = ReviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Review not found: " + id));
+
+        // Only the author can edit their own review; null requestingUserId = admin bypass
+        if (requestingUserId != null && !existing.getReviewerId().equals(requestingUserId)) {
+            throw new SecurityException("You can only edit your own reviews.");
+        }
+        // NOTE: Status restriction REMOVED — admin & buyers can edit approved/rejected reviews too.
+        if (newRating < 1 || newRating > 5) {
+            throw new IllegalArgumentException("Rating must be between 1 and 5.");
+        }
+
+        existing.setRating(newRating);
+        existing.setReviewText(newText);
+        return ReviewRepository.save(existing);
+    }
+
+
 
 
 }
