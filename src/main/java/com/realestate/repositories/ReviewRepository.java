@@ -13,7 +13,6 @@ import java.util.List;
  * Repository interface for Feedback/Review data access.
  *
  * Component 06 - Feedback and Review Management
- * Developer: [Student 6]
  */
 @Repository
 public interface ReviewRepository extends JpaRepository<ReviewEntity, Integer> {
