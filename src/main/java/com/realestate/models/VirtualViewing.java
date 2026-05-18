@@ -7,3 +7,14 @@ public class VirtualViewing extends Booking {
         super(bookingId, buyerId, propertyId, bookingDate, status);
         this.meetingLink = meetingLink;
     }
+	
+	public String getMeetingLink() { return meetingLink; }
+    public void setMeetingLink(String meetingLink) { this.meetingLink = meetingLink; }
+
+    @Override
+    public String confirmBooking() {
+        setStatus("confirmed");
+        return "Virtual viewing confirmed. Link: " + meetingLink;
+    }
+}
+
