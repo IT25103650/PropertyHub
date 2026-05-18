@@ -2,14 +2,32 @@ package com.realestate.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDateTime;
 
+/**
+ * JPA Entity representing an Admin user in the PropertyHub system.
+ * Maps to the shared 'Users' table with role = 'admin'.
+ *
+ * Component 05 - Admin Management
+ * Developer: [Student 5]
+ */
 @Entity
 @Table(name = "Users")
+@org.hibernate.annotations.Where(clause = "role = 'admin'")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminEntity {
+
+    public AdminEntity(String firstName, String lastName, String email, String passwordHash, String phone) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.phone = phone;
+    }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +46,7 @@ public class AdminEntity {
     @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
+    // Role is always 'admin' for this entity
     @Column(name = "role", nullable = false)
     private String role = "admin";
 
