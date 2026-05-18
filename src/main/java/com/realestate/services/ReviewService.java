@@ -10,13 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Service layer for Feedback and Review Management business logic.
- * All review-specific operations are centralised here.
- *
- * Component 06 - Feedback and Review Management
- * Developer: [Student 6]
- */
+// Service class for handling feedback and review operations.
+// Component 06 - Feedback and Review Management
+
 @Service
 @Transactional
 public class ReviewService {
@@ -24,13 +20,12 @@ public class ReviewService {
     @Autowired
     private ReviewRepository ReviewRepository;
 
-    // ─── CREATE ─────────────────────────────────────────────────────────────────
+    //CREATE
 
-    /**
-     * Submit a new feedback / review.
-     * Validates rating range (1-5) and reviewer ID.
-     * NOTE: targetPropertyId and targetAgentId can BOTH be null for site-level reviews.
-     */
+    // Submit a new feedback or review.
+    // Validates the rating and reviewer details.
+    // Property ID and Agent ID can be null for general site reviews.
+
     public ReviewEntity createFeedback(ReviewEntity feedback) {
         if (feedback.getReviewerId() == null) {
             throw new IllegalArgumentException("Reviewer ID is required.");
@@ -46,9 +41,9 @@ public class ReviewService {
         return ReviewRepository.save(feedback);
     }
 
-    // ─── READ ────────────────────────────────────────────────────────────────────
+    //READ
 
-    /** Get all feedback/reviews (admin use). */
+    //Get all feedback/reviews (admin use)
     @Transactional(readOnly = true)
     public List<ReviewEntity> getAllFeedback() {
         return ReviewRepository.findAll(
@@ -56,43 +51,43 @@ public class ReviewService {
                         org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
     }
 
-    /** Get a single review by ID. */
+    //Get a single review by ID
     @Transactional(readOnly = true)
     public Optional<ReviewEntity> getFeedbackById(Integer id) {
         return ReviewRepository.findById(id);
     }
 
-    /** Get all reviews written by a specific buyer. */
+    //Get all reviews written by a specific buyer
     @Transactional(readOnly = true)
     public List<ReviewEntity> getFeedbackByReviewer(Integer reviewerId) {
         return ReviewRepository.findByReviewerIdOrderByCreatedAtDesc(reviewerId);
     }
 
-    /** Get all reviews for a specific property. */
+    //Get all reviews for a specific property.
     @Transactional(readOnly = true)
     public List<ReviewEntity> getFeedbackByProperty(Integer propertyId) {
         return ReviewRepository.findByTargetPropertyIdOrderByCreatedAtDesc(propertyId);
     }
 
-    /** Get approved reviews for a property (public display). */
+    //Get approved reviews for a property (public display)
     @Transactional(readOnly = true)
     public List<ReviewEntity> getApprovedFeedbackByProperty(Integer propertyId) {
         return ReviewRepository.findApprovedByProperty(propertyId);
     }
 
-    /** Get average rating for a property. */
+    //Get average rating for a property.
     @Transactional(readOnly = true)
     public Double getAverageRatingForProperty(Integer propertyId) {
         return ReviewRepository.avgRatingByProperty(propertyId);
     }
 
-    /** Get all reviews by status (pending / approved / rejected). */
+    //Get all reviews by status (pending / approved / rejected)
     @Transactional(readOnly = true)
     public List<ReviewEntity> getFeedbackByStatus(String status) {
         return ReviewRepository.findByStatusOrderByCreatedAtDesc(status);
     }
 
-    /** Count reviews by status. */
+    //Count reviews by status.
     @Transactional(readOnly = true)
     public long countByStatus(String status) {
         return ReviewRepository.countByStatus(status);
@@ -100,22 +95,21 @@ public class ReviewService {
 
     // ─── UPDATE ──────────────────────────────────────────────────────────────────
 
-    /**
-     * Update a review's rating and text.
-     * When requestingUserId is null it means admin is calling — skip ownership check.
-     * Status restriction removed: admin and buyers can edit reviews in any state.
-     *
-     * @throws IllegalArgumentException if review not found.
-     */
+    // Updates review rating and content.
+    // If requestingUserId is null, it's an admin request (no ownership check).
+    // Admin and users can edit reviews in any status.
+    // Throws IllegalArgumentException if review is not found.
+
     public ReviewEntity updateFeedback(Integer id, int newRating, String newText, Integer requestingUserId) {
         ReviewEntity existing = ReviewRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Review not found: " + id));
 
-        // Only the author can edit their own review; null requestingUserId = admin bypass
+        // Only the review author can edit their review.
+        // If requestingUserId is null, it is treated as admin (bypass ownership check).
         if (requestingUserId != null && !existing.getReviewerId().equals(requestingUserId)) {
             throw new SecurityException("You can only edit your own reviews.");
         }
-        // NOTE: Status restriction REMOVED — admin & buyers can edit approved/rejected reviews too.
+        //Status restriction REMOVED — admin & buyers can edit approved/rejected reviews too.
         if (newRating < 1 || newRating > 5) {
             throw new IllegalArgumentException("Rating must be between 1 and 5.");
         }
@@ -125,9 +119,9 @@ public class ReviewService {
         return ReviewRepository.save(existing);
     }
 
-    // ─── MODERATION ──────────────────────────────────────────────────────────────
+    //MODERATION
 
-    /** Admin approves a review (makes it publicly visible). */
+    //Admin approves a review (makes it publicly visible)
     public ReviewEntity approveFeedback(Integer id) {
         ReviewEntity feedback = ReviewRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Review not found: " + id));
@@ -135,7 +129,7 @@ public class ReviewService {
         return ReviewRepository.save(feedback);
     }
 
-    /** Admin rejects a review (hides it from public view). */
+    // Admin action to reject a review and hide it from public view.
     public ReviewEntity rejectFeedback(Integer id) {
         ReviewEntity feedback = ReviewRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Review not found: " + id));
@@ -143,12 +137,10 @@ public class ReviewService {
         return ReviewRepository.save(feedback);
     }
 
-    // ─── DELETE ──────────────────────────────────────────────────────────────────
+    //DELETE
 
-    /**
-     * Delete a review permanently.
-     * Accessible by the author or an admin.
-     */
+    // Deletes a review permanently.
+    // Allowed for the review author or admin (null requestingUserId).
     public void deleteFeedback(Integer id) {
         if (!ReviewRepository.existsById(id)) {
             throw new IllegalArgumentException("Review not found: " + id);
