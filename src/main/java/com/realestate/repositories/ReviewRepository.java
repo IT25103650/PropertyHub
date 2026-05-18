@@ -1,16 +1,20 @@
 package com.realestate.repositories;
 import com.realestate.models.*;
+
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface ReviewRepository extends JpaRepository<ReviewEntity, Integer> {
+import java.util.List;
 
 /**
  * Repository interface for Feedback/Review data access.
+ *
  * Component 06 - Feedback and Review Management
+ * Developer: [Student 6]
  */
-
 @Repository
 public interface ReviewRepository extends JpaRepository<ReviewEntity, Integer> {
 
@@ -46,5 +50,5 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Integer> {
 
     /** Count reviews written by a specific buyer. */
     long countByReviewerId(Integer reviewerId);
-
 }
+
