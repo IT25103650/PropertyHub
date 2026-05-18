@@ -37,3 +37,32 @@ public class SellerService {
         seller.setIsActive(true);
         return sellerRepository.save(seller);
     }
+
+    // â”€â”€â”€ READ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+    /** Get all sellers in the system. */
+    @Transactional(readOnly = true)
+    public List<SellerEntity> getAllSellers() {
+        return sellerRepository.findAllSellers();
+    }
+
+    /** Get a seller by ID. */
+    @Transactional(readOnly = true)
+    public Optional<SellerEntity> getSellerById(Integer id) {
+        return sellerRepository.findById(id);
+    }
+
+    /** Get a seller by email. */
+    @Transactional(readOnly = true)
+    public Optional<SellerEntity> getSellerByEmail(String email) {
+        return sellerRepository.findByEmail(email);
+    }
+
+    /** Search sellers by keyword. */
+    @Transactional(readOnly = true)
+    public List<SellerEntity> searchSellers(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return getAllSellers();
+        }
+        return sellerRepository.searchSellers(keyword.trim());
+    }
