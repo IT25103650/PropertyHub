@@ -15,4 +15,12 @@ public class Admin extends User{
     public String getPermissionLevel(){
         return permissionLevel;
     }
+    public void setPermissionLevel(String ppermissionLevel){
+        this.permissionLevel=ppermissionLevel;
+    }
+
+    @Override
+    public String displayDashboard() {
+        return "redirect:/admin-dashboard";
+    }
 }
